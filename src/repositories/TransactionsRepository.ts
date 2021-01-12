@@ -19,7 +19,7 @@ class TransactionsRepository {
   }
 
   public getBalance(): Balance {
-    const initialValue: Balance = {
+    const initialBalance: Balance = {
       income: 0,
       outcome: 0,
       total: 0,
@@ -27,20 +27,26 @@ class TransactionsRepository {
 
     const balance = this.transactions.reduce<Balance>(
       (balanceAcc, transaction): Balance => {
-        if (transaction.type === 'income') {
-          balanceAcc.income += transaction.value;
+        switch (transaction.type) {
+          case 'income': {
+            balanceAcc.income += transaction.value;
+            break;
+          }
+          case 'outcome': {
+            balanceAcc.outcome += transaction.value;
+            break;
+          }
+          default: {
+            break;
+          }
         }
 
-        if (transaction.type === 'outcome') {
-          balanceAcc.outcome += transaction.value;
-        }
+        balanceAcc.total = balanceAcc.income - balanceAcc.outcome;
 
         return balanceAcc;
       },
-      initialValue,
+      initialBalance,
     );
-
-    balance.total = balance.income - balance.outcome;
 
     return balance;
   }
